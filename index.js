@@ -1,4 +1,4 @@
-require("dotenv").config();
+const env = require("./config/env");
 
 const {
   Client,
@@ -208,7 +208,7 @@ function obterListaIdsEnv(valor) {
 function obterNomeGuildaDoMembro(member) {
   if (!member) return "SEM GUILDA";
 
-  const guildRoleIds = obterListaIdsEnv(process.env.GUILD_ROLE_IDS);
+  const guildRoleIds = obterListaIdsEnv(env.GUILD_ROLE_IDS);
 
   if (!guildRoleIds.length) {
     return "SEM GUILDA";
@@ -227,39 +227,39 @@ function obterEloPorVitorias(wins = 0) {
   if (totalWins >= 20) {
     return {
       nome: "General",
-      roleId: process.env.PLAYER_ELO_GENERAL_ROLE_ID,
-      imagem: process.env.PLAYER_ELO_GENERAL_IMAGE || process.env.RANK_GENERAL_IMAGE
+      roleId: env.PLAYER_ELO_GENERAL_ROLE_ID,
+      imagem: env.PLAYER_ELO_GENERAL_IMAGE || env.RANK_GENERAL_IMAGE
     };
   }
 
   if (totalWins >= 15) {
     return {
       nome: "Esmeralda",
-      roleId: process.env.PLAYER_ELO_ESMERALDA_ROLE_ID,
-      imagem: process.env.PLAYER_ELO_ESMERALDA_IMAGE || process.env.RANK_ESMERALDA_IMAGE
+      roleId: env.PLAYER_ELO_ESMERALDA_ROLE_ID,
+      imagem: env.PLAYER_ELO_ESMERALDA_IMAGE || env.RANK_ESMERALDA_IMAGE
     };
   }
 
   if (totalWins >= 10) {
     return {
       nome: "Ouro",
-      roleId: process.env.PLAYER_ELO_OURO_ROLE_ID,
-      imagem: process.env.PLAYER_ELO_OURO_IMAGE || process.env.RANK_OURO_IMAGE
+      roleId: env.PLAYER_ELO_OURO_ROLE_ID,
+      imagem: env.PLAYER_ELO_OURO_IMAGE || env.RANK_OURO_IMAGE
     };
   }
 
   if (totalWins >= 5) {
     return {
       nome: "Bronze",
-      roleId: process.env.PLAYER_ELO_BRONZE_ROLE_ID,
-      imagem: process.env.PLAYER_ELO_BRONZE_IMAGE || process.env.RANK_BRONZE_IMAGE
+      roleId: env.PLAYER_ELO_BRONZE_ROLE_ID,
+      imagem: env.PLAYER_ELO_BRONZE_IMAGE || env.RANK_BRONZE_IMAGE
     };
   }
 
   return {
     nome: "Ferro",
-    roleId: process.env.PLAYER_ELO_FERRO_ROLE_ID,
-    imagem: process.env.PLAYER_ELO_FERRO_IMAGE || process.env.RANK_FERRO_IMAGE
+    roleId: env.PLAYER_ELO_FERRO_ROLE_ID,
+    imagem: env.PLAYER_ELO_FERRO_IMAGE || env.RANK_FERRO_IMAGE
   };
 }
 
@@ -267,28 +267,28 @@ function obterEloPlayerDoMembro(member, wins = 0) {
   const elos = [
     {
       nome: "General",
-      roleId: process.env.PLAYER_ELO_GENERAL_ROLE_ID,
-      imagem: process.env.PLAYER_ELO_GENERAL_IMAGE || process.env.RANK_GENERAL_IMAGE
+      roleId: env.PLAYER_ELO_GENERAL_ROLE_ID,
+      imagem: env.PLAYER_ELO_GENERAL_IMAGE || env.RANK_GENERAL_IMAGE
     },
     {
       nome: "Esmeralda",
-      roleId: process.env.PLAYER_ELO_ESMERALDA_ROLE_ID,
-      imagem: process.env.PLAYER_ELO_ESMERALDA_IMAGE || process.env.RANK_ESMERALDA_IMAGE
+      roleId: env.PLAYER_ELO_ESMERALDA_ROLE_ID,
+      imagem: env.PLAYER_ELO_ESMERALDA_IMAGE || env.RANK_ESMERALDA_IMAGE
     },
     {
       nome: "Ouro",
-      roleId: process.env.PLAYER_ELO_OURO_ROLE_ID,
-      imagem: process.env.PLAYER_ELO_OURO_IMAGE || process.env.RANK_OURO_IMAGE
+      roleId: env.PLAYER_ELO_OURO_ROLE_ID,
+      imagem: env.PLAYER_ELO_OURO_IMAGE || env.RANK_OURO_IMAGE
     },
     {
       nome: "Bronze",
-      roleId: process.env.PLAYER_ELO_BRONZE_ROLE_ID,
-      imagem: process.env.PLAYER_ELO_BRONZE_IMAGE || process.env.RANK_BRONZE_IMAGE
+      roleId: env.PLAYER_ELO_BRONZE_ROLE_ID,
+      imagem: env.PLAYER_ELO_BRONZE_IMAGE || env.RANK_BRONZE_IMAGE
     },
     {
       nome: "Ferro",
-      roleId: process.env.PLAYER_ELO_FERRO_ROLE_ID,
-      imagem: process.env.PLAYER_ELO_FERRO_IMAGE || process.env.RANK_FERRO_IMAGE
+      roleId: env.PLAYER_ELO_FERRO_ROLE_ID,
+      imagem: env.PLAYER_ELO_FERRO_IMAGE || env.RANK_FERRO_IMAGE
     }
   ];
 
@@ -367,7 +367,7 @@ function drawCardElo(ctx, x, y, w, h, titulo, valor, imagemElo) {
 
 
 function usuarioEhAdmin(interaction) {
-  return interaction.user.id === process.env.ADMIN_ID;
+  return interaction.user.id === env.ADMIN_ID;
 }
 
 function calcularPontosColocacao(colocacao) {
@@ -1157,7 +1157,7 @@ client.on("interactionCreate", async (interaction) => {
       // 🛠️ /admin
       if (interaction.commandName === "admin") {
 
-        if (interaction.user.id !== process.env.ADMIN_ID) {
+        if (interaction.user.id !== env.ADMIN_ID) {
           return interaction.reply({
             content: "❌ Sem permissão.",
             ephemeral: true
@@ -1958,16 +1958,16 @@ client.on("interactionCreate", async (interaction) => {
 
       const member = await interaction.guild.members.fetch(interaction.user.id);
 
-      if (process.env.CARGO_ACESSO_ANTECIPADO) {
-        await member.roles.remove(process.env.CARGO_ACESSO_ANTECIPADO).catch(() => null);
+      if (env.CARGO_ACESSO_ANTECIPADO) {
+        await member.roles.remove(env.CARGO_ACESSO_ANTECIPADO).catch(() => null);
       }
 
-      if (process.env.CARGO_VISITANTE) {
-        await member.roles.add(process.env.CARGO_VISITANTE).catch(() => null);
+      if (env.CARGO_VISITANTE) {
+        await member.roles.add(env.CARGO_VISITANTE).catch(() => null);
       }
 
-      if (process.env.CARGO_CONECTADO) {
-        await member.roles.add(process.env.CARGO_CONECTADO).catch(() => null);
+      if (env.CARGO_CONECTADO) {
+        await member.roles.add(env.CARGO_CONECTADO).catch(() => null);
       }
 
       conexoesPendentes.delete(interaction.user.id);
@@ -2151,7 +2151,7 @@ client.on("interactionCreate", async (interaction) => {
       `).run(interaction.user.id, user.game_id, user.nick, user.pix);
 
       const member = await interaction.guild.members.fetch(interaction.user.id);
-      await member.roles.add(process.env.CARGO_EVENTO);
+      await member.roles.add(env.CARGO_EVENTO);
 
       return interaction.update({
         content: "🎉 Inscrição confirmada! Você já está registrado no evento.",
@@ -2163,7 +2163,7 @@ client.on("interactionCreate", async (interaction) => {
     // ================= ADMIN EVENTO INSCRITOS =================
     if (interaction.isButton() && interaction.customId === "admin_evento_inscritos") {
 
-      if (interaction.user.id !== process.env.ADMIN_ID) {
+      if (interaction.user.id !== env.ADMIN_ID) {
         return interaction.reply({
           content: "❌ Sem permissão.",
           ephemeral: true
@@ -2284,13 +2284,13 @@ const commands = [
   new SlashCommandBuilder().setName("admin").setDescription("Painel admin")
 ].map(c => c.toJSON());
 
-const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
+const rest = new REST({ version: "10" }).setToken(env.TOKEN);
 
 (async () => {
   try {
     console.log("🔄 Registrando comandos...");
     await rest.put(
-      Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+      Routes.applicationGuildCommands(env.CLIENT_ID, env.GUILD_ID),
       { body: commands }
     );
     console.log("✅ Comandos registrados!");
@@ -2299,4 +2299,4 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
   }
 })();
 
-client.login(process.env.TOKEN);
+client.login(env.TOKEN);
