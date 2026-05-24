@@ -25,6 +25,7 @@ const COR = 0x6A0DAD;
 const COR_DOURADO = 0xF1C40F;
 const COR_ATLAS_VERIFY = 0x6D28D9;
 
+const ATLAS_MEMBER_ROLE_ID = "1507940677294751874";
 const ATLAS_VERIFY_BANNER = "https://media.discordapp.net/attachments/1372564454025330750/1507780534116417597/Canva.Derrota_13_19_29_1.png?ex=6a13258c&is=6a11d40c&hm=fb3d7319ae5a9e789b31cb63dd273ee194c3bd82b9b2f5ac6c2ca3217227a3c6&=&format=webp&quality=lossless&width=1860&height=580";
 const ATLAS_CONNECT_BANNER = "https://media.discordapp.net/attachments/1504843833240977419/1506084868100980857/3533333_1.png?ex=6a0cfa56&is=6a0ba8d6&hm=c7bc2ca67bee8aeab58b829a59a00c311696711ad2d20d4d695b1adf1193b071&=&format=webp&quality=lossless&width=1866&height=586";
 
@@ -1572,6 +1573,72 @@ client.on("interactionCreate", async (interaction) => {
         )
         .setImage(ATLAS_VERIFY_BANNER)
         .setFooter({ text: "HUB SECURITY • Championship Security" })
+        .setTimestamp();
+
+      return interaction.reply({
+        embeds: [embed],
+        ephemeral: true
+      });
+    }
+
+    // ================= HUB SECURITY - ACEITAR REGRAS =================
+    if (interaction.isButton() && interaction.customId === "atlas_verify_accept_rules") {
+
+      if (!interaction.guild) {
+        return interaction.reply({
+          content: "❌ Esta verificação só pode ser feita dentro do servidor.",
+          ephemeral: true
+        });
+      }
+
+      const member = await interaction.guild.members.fetch(interaction.user.id).catch(() => null);
+
+      if (!member) {
+        return interaction.reply({
+          content: "❌ Não foi possível localizar seu perfil no servidor.",
+          ephemeral: true
+        });
+      }
+
+      const role = interaction.guild.roles.cache.get(ATLAS_MEMBER_ROLE_ID)
+        || await interaction.guild.roles.fetch(ATLAS_MEMBER_ROLE_ID).catch(() => null);
+
+      if (!role) {
+        return interaction.reply({
+          content: "❌ O cargo **・Atlas Member** não foi encontrado no servidor. Avise a administração.",
+          ephemeral: true
+        });
+      }
+
+      if (member.roles.cache.has(ATLAS_MEMBER_ROLE_ID)) {
+        return interaction.reply({
+          content: "⚠️ Você já aceitou as regras e já possui o cargo **・Atlas Member**.",
+          ephemeral: true
+        });
+      }
+
+      await member.roles.add(ATLAS_MEMBER_ROLE_ID).catch((error) => {
+        console.error("Erro ao adicionar cargo Atlas Member:", error);
+        return null;
+      });
+
+      const memberAtualizado = await interaction.guild.members.fetch(interaction.user.id).catch(() => null);
+
+      if (!memberAtualizado || !memberAtualizado.roles.cache.has(ATLAS_MEMBER_ROLE_ID)) {
+        return interaction.reply({
+          content: "❌ Não consegui adicionar o cargo **・Atlas Member**. Verifique se o cargo do bot está acima desse cargo e se ele possui permissão para gerenciar cargos.",
+          ephemeral: true
+        });
+      }
+
+      const embed = new EmbedBuilder()
+        .setColor(COR_ATLAS_VERIFY)
+        .setTitle("✅ Verificação concluída")
+        .setDescription(
+          "Você aceitou as regras com sucesso e recebeu o cargo **・Atlas Member**.\n\n" +
+          "Bem-vindo ao Atlas Championship. Boa sorte nas competições!"
+        )
+        .setFooter({ text: "HUB SECURITY • Acesso liberado" })
         .setTimestamp();
 
       return interaction.reply({
