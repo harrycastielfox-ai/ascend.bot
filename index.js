@@ -12,11 +12,11 @@ const {
   EmbedBuilder,
   REST,
   Routes,
-  SlashCommandBuilder,
   AttachmentBuilder
 } = require("discord.js");
 
 const { createCanvas, loadImage } = require("canvas");
+const { slashCommandsMap, slashCommandsData } = require("./commands");
 
 const Database = require("better-sqlite3");
 const db = new Database("database.db");
@@ -932,265 +932,21 @@ client.on("interactionCreate", async (interaction) => {
   try {
     // ================= COMANDOS =================
     if (interaction.isChatInputCommand()) {
+      const slashCommand = slashCommandsMap.get(interaction.commandName);
 
-      // 🔗 /conectar
-      if (interaction.commandName === "conectar") {
-
-        const embed = new EmbedBuilder()
-          .setColor(COR_ATLAS_VERIFY)
-          .setDescription(
-            "### **<:ASCENDINFINITY:1506090797987004506> Sistema de Conexão - ATLAS**\n\n\u200B\n" +
-
-            "<:azul:1506089341406150777> **1°:** Clique em **Conectar**\n" +
-            "Informe: **ID**, **NICK** e **PIX**\n\n" +
-
-            "<:azul:1506089341406150777> **2°:** Confirme seus dados:\n" +
-            "Não nos responsabilizamos por erros.\n\n" +
-
-            "<:azul:1506089341406150777> **3°:** Onde encontro meu **ID:**\n" +
-            "Acesse seu → Perfil do jogo e copie."
-          )
-          .setImage(ATLAS_CONNECT_BANNER)
-          .setFooter({ text: "Atlas Connect • Sistema Oficial" });
-
-        const row = new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId("connect")
-            .setLabel("Conectar")
-            .setEmoji("🔗")
-            .setStyle(ButtonStyle.Primary)
-        );
-
-        await interaction.reply({
-          content: "✅ Painel de conexão enviado.",
-          ephemeral: true
-        });
-
-        return interaction.channel.send({
-          embeds: [embed],
-          components: [row]
-        });
-      }
-
-      // 📊 /perfil
-      if (interaction.commandName === "perfil") {
-
-        const embed = new EmbedBuilder()
-          .setColor(COR_ATLAS_VERIFY)
-          .setDescription(
-            "## **<a:j_azulinfinito2:1505603691594649703> Painel Ranking e Perfil**\n\n\u200B\n" +
-            "<a:blue:1505604199344242868> **Acesse seu Perfil competitivo**\n\n" +
-            "<a:blue:1505604199344242868> **Meu Perfil:**\n" +
-            "<a:03_arrow:1505602455726194808> Dados e informações.\n\n" +
-            "<:aim:1505614995101323324> **Ranking:**\n" +
-            "<a:03_arrow:1505602455726194808> Veja os melhores da Atlas."
-          )
-          .setImage("https://media.discordapp.net/attachments/1504843833240977419/1506111249887395940/olicihi000nal_1.png")
-          .setFooter({ text: "Atlas System • Sistema competitivo" });
-
-        const row = new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId("ver_perfil")
-            .setLabel("Meu Perfil")
-            .setEmoji("🖥️")
-            .setStyle(ButtonStyle.Primary),
-
-          new ButtonBuilder()
-            .setCustomId("ver_ranking")
-            .setLabel("Ranking")
-            .setEmoji("👑")
-            .setStyle(ButtonStyle.Secondary)
-        );
-
-        await interaction.reply({
-          content: "✅ Painel de perfil enviado.",
-          ephemeral: true
-        });
-
-        return interaction.channel.send({
-          embeds: [embed],
-          components: [row]
-        });
-      }
-
-      // 🏆 /evento
-      if (interaction.commandName === "evento") {
-
-        const embed = new EmbedBuilder()
-          .setColor(COR_DOURADO)
-          .setDescription(
-            "<a:ASCENDINFINITY:1493015893893189673> **Evento ASCEND Infinity**\n" +
-            "<a:sineta:1494032742344691903> **Evento Competitivo — Prime Rush**\n\n" +
-
-            "<:trainingcenter:1499625274952908910> **Premiação Total:** `R$150`\n\n" +
-
-            "<:trainingcenter:1499622266718261418> **Top 3 jogadores:**\n" +
-            "Os 3 jogadores que mais fizerem kills somando as **2 partidas** recebem **R$50 cada**.\n\n" +
-
-            "<a:ASCENDINFINITY:1493035717087989761> **Desafio de Clipe:**\n" +
-            "O primeiro clipe que bater **500 views** usando as tags abaixo ganha **R$50:**\n" +
-            "**#AscendInfinity #AS #PrimeRush #AscendEvento**\n\n" +
-
-            "<a:gift:1493015834950635693> **Sorteio durante as partidas:**\n" +
-            "Durante as partidas, **5 jogadores** serão sorteados.\n" +
-            "Cada sorteado recebe **<a:DIMA:1493014050479800320> 600 Gemas.**\n\n" +
-
-            "<a:ASCENDINFINITY:1493075576817189047> Só por jogar você já participa dos sorteios."
-          )
-          .setFooter({ text: "ASCEND Infinity • Evento Oficial" });
-
-        const row = new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId("evento")
-            .setLabel("Participar do Evento")
-            .setEmoji({ name: "ASCENDINFINITY", id: "1493016022398140437", animated: true })
-            .setStyle(ButtonStyle.Success)
-        );
-
-        await interaction.reply({
-          content: "✅ Painel de evento enviado.",
-          ephemeral: true
-        });
-
-        return interaction.channel.send({
-          embeds: [embed],
-          components: [row]
-        });
-      }
-
-      // 🛡️ /regras
-      if (interaction.commandName === "regras") {
-
-        const embed = new EmbedBuilder()
-          .setColor(COR_ATLAS_VERIFY)
-          .setDescription(
-            "### **<:emoji_3:1373369357777764452> HUB - REGRAS**\n\n\u200B\n" +
-            "<a:c_roxo_preto_fireroxo:1372691295721488516> Respeite todos os jogadores e membros.\n" +
-            "<a:c_roxo_preto_fireroxo:1372691295721488516> Proibido racismo, assédio, bullying ou discriminação.\n" +
-            "<a:c_roxo_preto_fireroxo:1372691295721488516> Não será tolerado conteúdo NSFW (+18).\n" +
-            "<a:c_roxo_preto_fireroxo:1372691295721488516> Evite spam, flood, links excessivos e caps abusivo.\n" +
-            "<a:c_roxo_preto_fireroxo:1372691295721488516> Não compartilhe informações pessoais de terceiros.\n" +
-            "<a:c_roxo_preto_fireroxo:1372691295721488516> Denúncias apenas com provas (prints/vídeos).\n" +
-            "<a:c_roxo_preto_fireroxo:1372691295721488516> Problemas devem ser resolvidos via ticket.\n" +
-            "<a:c_roxo_preto_fireroxo:1372691295721488516> Múltiplas contas e nick fake são proibidos.\n" +
-            "<a:c_roxo_preto_fireroxo:1372691295721488516> Comportamento tóxico pode resultar em punição.\n\n" +
-            "**Ao aceitar, você confirma que:**\n\n" +
-            "<a:LEGENDAPOSTAS:1373180471537565726> Leu e concorda com as regras.\n" +
-            "<a:LEGENDAPOSTAS:1373180471537565726> Vai manter respeito com jogadores.\n" +
-            "<a:LEGENDAPOSTAS:1373180471537565726> Entende que punições são severas.\n\n"
-          )
-          .setImage(ATLAS_VERIFY_BANNER)
-          .setFooter({ text: "HUB SECURITY • Championship Security" })
-          .setTimestamp();
-
-        const row = new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId("atlas_verify_accept_rules")
-            .setLabel("Aceitar Regras")
-            .setEmoji("✅")
-            .setStyle(ButtonStyle.Primary),
-
-          new ButtonBuilder()
-            .setCustomId("atlas_verify_rules_english")
-            .setLabel("English")
-            .setEmoji("🇺🇸")
-            .setStyle(ButtonStyle.Secondary),
-
-          new ButtonBuilder()
-            .setCustomId("atlas_verify_rules_spanish")
-            .setLabel("Español")
-            .setEmoji("🇪🇸")
-            .setStyle(ButtonStyle.Secondary)
-        );
-
-        await interaction.reply({
-          content: "✅ Painel HUB SECURITY enviado.",
-          ephemeral: true
-        });
-
-        return interaction.channel.send({
-          embeds: [embed],
-          components: [row]
-        });
-      }
-
-
-      // 🏆 /pontuacao
-      if (interaction.commandName === "pontuacao") {
-
-        if (!usuarioEhAdmin(interaction)) {
-          return interaction.reply({
-            content: "❌ Sem permissão.",
-            ephemeral: true
-          });
-        }
-
-        await interaction.reply({
-          content: "✅ Painel de pontuação enviado.",
-          ephemeral: true
-        });
-
-        return interaction.channel.send({
-          embeds: [montarEmbedPainelPontuacao()],
-          components: montarBotoesPontuacao()
-        });
-      }
-
-      // 🎯 /ranking-solo
-      if (interaction.commandName === "ranking-solo") {
-
-        return interaction.reply({
-          embeds: [montarEmbedRankingSolo()],
-          ephemeral: true
-        });
-      }
-
-      // 🏴 /ranking-guildas
-      if (interaction.commandName === "ranking-guildas") {
-
-        return interaction.reply({
-          embeds: [montarEmbedRankingGuildas()],
-          ephemeral: true
-        });
-      }
-
-      // 🛠️ /admin
-      if (interaction.commandName === "admin") {
-
-        if (interaction.user.id !== env.ADMIN_ID) {
-          return interaction.reply({
-            content: "❌ Sem permissão.",
-            ephemeral: true
-          });
-        }
-
-        const embed = new EmbedBuilder()
-          .setColor(COR)
-          .setTitle("🛠️ Painel ADM")
-          .setDescription("Gerencie os jogadores.");
-
-        const row = new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId("buscar_user")
-            .setLabel("Buscar Jogador")
-            .setEmoji("🔎")
-            .setStyle(ButtonStyle.Primary),
-
-          new ButtonBuilder()
-            .setCustomId("admin_evento_inscritos")
-            .setLabel("Inscritos no Evento")
-            .setEmoji("🏆")
-            .setStyle(ButtonStyle.Secondary)
-        );
-
-        await interaction.reply({
-          content: "✅ Painel ADM enviado.",
-          ephemeral: true
-        });
-
-        return interaction.channel.send({
-          embeds: [embed],
-          components: [row]
+      if (slashCommand) {
+        return slashCommand.execute(interaction, {
+          env,
+          COR,
+          COR_DOURADO,
+          COR_ATLAS_VERIFY,
+          ATLAS_VERIFY_BANNER,
+          ATLAS_CONNECT_BANNER,
+          usuarioEhAdmin,
+          montarEmbedPainelPontuacao,
+          montarBotoesPontuacao,
+          montarEmbedRankingSolo,
+          montarEmbedRankingGuildas
         });
       }
     }
@@ -2273,16 +2029,7 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 // ================= COMANDOS =================
-const commands = [
-  new SlashCommandBuilder().setName("conectar").setDescription("Conectar conta"),
-  new SlashCommandBuilder().setName("perfil").setDescription("Painel de ranking e perfil"),
-  new SlashCommandBuilder().setName("evento").setDescription("Inscrição em evento"),
-  new SlashCommandBuilder().setName("regras").setDescription("Enviar painel HUB SECURITY de regras"),
-  new SlashCommandBuilder().setName("pontuacao").setDescription("Painel de pontuação competitivo Atlas"),
-  new SlashCommandBuilder().setName("ranking-solo").setDescription("Ver ranking solo competitivo"),
-  new SlashCommandBuilder().setName("ranking-guildas").setDescription("Ver ranking geral de guildas"),
-  new SlashCommandBuilder().setName("admin").setDescription("Painel admin")
-].map(c => c.toJSON());
+const commands = slashCommandsData.map(command => command.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(env.TOKEN);
 
