@@ -23,7 +23,7 @@ const db = new Database("database.db");
 
 const COR = 0x6A0DAD;
 const COR_DOURADO = 0xF1C40F;
-const COR_ATLAS_VERIFY = 0x2563EB;
+const COR_ATLAS_VERIFY = 0x6D28D9;
 
 const ATLAS_MEMBER_ROLE_ID = "1507940677294751874";
 const ATLAS_VERIFY_BANNER = "https://media.discordapp.net/attachments/1372564454025330750/1507780534116417597/Canva.Derrota_13_19_29_1.png?ex=6a13258c&is=6a11d40c&hm=fb3d7319ae5a9e789b31cb63dd273ee194c3bd82b9b2f5ac6c2ca3217227a3c6&=&format=webp&quality=lossless&width=1860&height=580";
