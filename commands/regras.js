@@ -28,7 +28,6 @@ module.exports = {
       .setTimestamp();
 
     const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId('atlas_verify_accept_rules').setLabel('Aceitar Regras').setEmoji('✅').setStyle(ButtonStyle.Primary),
       new ButtonBuilder().setCustomId('atlas_verify_rules_english').setLabel('English').setEmoji('🇺🇸').setStyle(ButtonStyle.Secondary),
       new ButtonBuilder().setCustomId('atlas_verify_rules_spanish').setLabel('Español').setEmoji('🇪🇸').setStyle(ButtonStyle.Secondary)
     );
