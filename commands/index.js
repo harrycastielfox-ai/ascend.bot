@@ -6,8 +6,9 @@ const pontuacao = require('./pontuacao');
 const rankingSolo = require('./ranking-solo');
 const rankingGuildas = require('./ranking-guildas');
 const admin = require('./admin');
+const globalchat = require('./globalchat');
 
-const slashCommands = [conectar, perfil, evento, regras, pontuacao, rankingSolo, rankingGuildas, admin];
+const slashCommands = [conectar, perfil, evento, regras, pontuacao, rankingSolo, rankingGuildas, admin, globalchat];
 
 module.exports = {
   slashCommands,

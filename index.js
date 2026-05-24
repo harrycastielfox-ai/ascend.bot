@@ -12,7 +12,9 @@ const {
   EmbedBuilder,
   REST,
   Routes,
-  AttachmentBuilder
+  AttachmentBuilder,
+  ChannelType,
+  WebhookClient
 } = require("discord.js");
 
 const { createCanvas, loadImage } = require("canvas");
@@ -33,7 +35,7 @@ const conexoesPendentes = new Map();
 const pontuacaoPendentes = new Map();
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds]
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
 });
 
 // ================= DATABASE =================
@@ -128,6 +130,17 @@ CREATE TABLE IF NOT EXISTS ranking_solo (
   wins INTEGER DEFAULT 0,
   partidas INTEGER DEFAULT 0,
   updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+`).run();
+
+db.prepare(`
+CREATE TABLE IF NOT EXISTS global_chat_channels (
+  guild_id TEXT PRIMARY KEY,
+  channel_id TEXT NOT NULL,
+  webhook_id TEXT,
+  webhook_token TEXT,
+  enabled INTEGER DEFAULT 1,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 `).run();
 
@@ -946,7 +959,8 @@ client.on("interactionCreate", async (interaction) => {
           montarEmbedPainelPontuacao,
           montarBotoesPontuacao,
           montarEmbedRankingSolo,
-          montarEmbedRankingGuildas
+          montarEmbedRankingGuildas,
+          db
         });
       }
     }
@@ -1959,6 +1973,89 @@ client.on("interactionCreate", async (interaction) => {
       content: "❌ Ocorreu um erro ao executar esta ação.",
       ephemeral: true
     }).catch(() => null);
+  }
+});
+
+async function obterOuCriarWebhookGlobal(channel, registro) {
+  if (registro.webhook_id && registro.webhook_token) {
+    return { id: registro.webhook_id, token: registro.webhook_token };
+  }
+
+  const webhooks = await channel.fetchWebhooks();
+  let webhook = webhooks.find(hook => hook.owner?.id === client.user.id);
+
+  if (!webhook) {
+    webhook = await channel.createWebhook({ name: 'Ascend Global Chat' });
+  }
+
+  if (!webhook?.token) {
+    throw new Error(`Webhook sem token no canal ${channel.id}`);
+  }
+
+  db.prepare(`
+    UPDATE global_chat_channels
+    SET webhook_id = ?, webhook_token = ?
+    WHERE guild_id = ?
+  `).run(webhook.id, webhook.token, registro.guild_id);
+
+  return { id: webhook.id, token: webhook.token };
+}
+
+client.on('messageCreate', async (message) => {
+  try {
+    if (!message.inGuild() || message.author.bot || message.webhookId) return;
+
+    const origem = db.prepare(`
+      SELECT guild_id, channel_id
+      FROM global_chat_channels
+      WHERE guild_id = ? AND channel_id = ? AND enabled = 1
+    `).get(message.guildId, message.channelId);
+
+    if (!origem) return;
+
+    const destinos = db.prepare(`
+      SELECT guild_id, channel_id, webhook_id, webhook_token
+      FROM global_chat_channels
+      WHERE enabled = 1 AND guild_id != ?
+    `).all(message.guildId);
+
+    if (!destinos.length) return;
+
+    const anexos = [...message.attachments.values()].map(attachment => attachment.url);
+    const conteudoBase = [message.content?.trim(), ...anexos].filter(Boolean).join('\n');
+    const conteudoFinal = conteudoBase || '[mensagem sem texto]';
+
+    for (const destino of destinos) {
+      try {
+        const guild = client.guilds.cache.get(destino.guild_id);
+        if (!guild) continue;
+
+        const canal = await guild.channels.fetch(destino.channel_id).catch(() => null);
+        if (!canal || canal.type !== ChannelType.GuildText) continue;
+
+        const permissao = canal.permissionsFor(guild.members.me);
+        if (!permissao?.has(['SendMessages', 'ManageWebhooks'])) continue;
+
+        const webhookData = await obterOuCriarWebhookGlobal(canal, destino);
+        const webhookClient = new WebhookClient({ id: webhookData.id, token: webhookData.token });
+
+        await webhookClient.send({
+          username: message.member?.displayName || message.author.username,
+          avatarURL: message.author.displayAvatarURL({ extension: 'png', size: 256 }),
+          content: conteudoFinal,
+          embeds: [
+            new EmbedBuilder()
+              .setColor(COR_ATLAS_VERIFY)
+              .setFooter({ text: `Origem: ${message.guild?.name || 'Servidor desconhecido'}` })
+          ],
+          allowedMentions: { parse: [] }
+        });
+      } catch (error) {
+        console.error('Erro ao encaminhar mensagem global:', error?.message || error);
+      }
+    }
+  } catch (error) {
+    console.error('Erro no listener de global chat:', error?.message || error);
   }
 });
 
