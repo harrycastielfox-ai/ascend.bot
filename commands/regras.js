@@ -10,8 +10,8 @@ module.exports = {
       .setDescription(
         '### **<:emoji_3:1373369357777764452> HUB - REGRAS**\n\n\u200B\n' +
         '<a:c_roxo_preto_fireroxo:1372691295721488516> Respeite todos os membros.\n' +
-        '<a:c_roxo_preto_fireroxo:1372691295721488516> Racismo, assédio e bullying são proibidos.\n' +
-        '<a:c_roxo_preto_fireroxo:1372691295721488516> Conteúdo NSFW (+18) não é permitido.\n' +
+        '<a:c_roxo_preto_fireroxo:1372691295721488516> Proibido: Racismo e  assédio.\n' +
+        '<a:c_roxo_preto_fireroxo:1372691295721488516> Proibido: Conteúdo NSFW (+18).\n' +
         '<a:c_roxo_preto_fireroxo:1372691295721488516> Evite spam, flood e CAPS abusivo.\n' +
         '<a:c_roxo_preto_fireroxo:1372691295721488516> Não divulgue dados pessoais.\n' +
         '<a:c_roxo_preto_fireroxo:1372691295721488516> Denúncias somente com provas.\n' +
