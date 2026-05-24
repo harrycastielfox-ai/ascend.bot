@@ -2066,12 +2066,21 @@ const rest = new REST({ version: "10" }).setToken(env.TOKEN);
 
 (async () => {
   try {
-    console.log("🔄 Registrando comandos...");
-    await rest.put(
-      Routes.applicationGuildCommands(env.CLIENT_ID, env.GUILD_ID),
-      { body: commands }
-    );
-    console.log("✅ Comandos registrados!");
+    const shouldRegisterGuildCommands = env.COMMANDS_SCOPE === "guild" && Boolean(env.GUILD_ID);
+
+    const route = shouldRegisterGuildCommands
+      ? Routes.applicationGuildCommands(env.CLIENT_ID, env.GUILD_ID)
+      : Routes.applicationCommands(env.CLIENT_ID);
+
+    const scopeLabel = shouldRegisterGuildCommands ? `guild (${env.GUILD_ID})` : "global";
+
+    console.log(`🔄 Registrando comandos (${scopeLabel})...`);
+    await rest.put(route, { body: commands });
+    console.log(`✅ Comandos registrados (${scopeLabel})!`);
+
+    if (env.COMMANDS_SCOPE === "guild" && !env.GUILD_ID) {
+      console.warn("⚠️ COMMANDS_SCOPE=guild definido sem GUILD_ID. Fallback aplicado para comandos globais.");
+    }
   } catch (err) {
     console.error(err);
   }
