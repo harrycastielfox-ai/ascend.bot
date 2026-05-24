@@ -2022,8 +2022,7 @@ client.on('messageCreate', async (message) => {
     if (!destinos.length) return;
 
     const anexos = [...message.attachments.values()].map(attachment => attachment.url);
-    const conteudoBase = [message.content?.trim(), ...anexos].filter(Boolean).join('\n');
-    const conteudoFinal = conteudoBase || '[mensagem sem texto]';
+    const conteudoFinal = message.content || '[mensagem sem texto]';
 
     for (const destino of destinos) {
       try {
@@ -2043,11 +2042,7 @@ client.on('messageCreate', async (message) => {
           username: message.member?.displayName || message.author.username,
           avatarURL: message.author.displayAvatarURL({ extension: 'png', size: 256 }),
           content: conteudoFinal,
-          embeds: [
-            new EmbedBuilder()
-              .setColor(COR_ATLAS_VERIFY)
-              .setFooter({ text: `Origem: ${message.guild?.name || 'Servidor desconhecido'}` })
-          ],
+          files: anexos,
           allowedMentions: { parse: [] }
         });
       } catch (error) {
