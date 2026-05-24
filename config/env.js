@@ -3,11 +3,16 @@ require("dotenv").config();
 const requiredVars = [
   "TOKEN",
   "CLIENT_ID",
-  "GUILD_ID",
   "ADMIN_ID"
 ];
 
 const missingVars = requiredVars.filter((name) => !process.env[name]);
+
+const normalizedCommandsScope = (process.env.COMMANDS_SCOPE || "global")
+  .trim()
+  .toLowerCase();
+
+const commandsScope = normalizedCommandsScope === "guild" ? "guild" : "global";
 
 if (missingVars.length > 0) {
   throw new Error(
@@ -20,6 +25,7 @@ const env = {
   CLIENT_ID: process.env.CLIENT_ID,
   GUILD_ID: process.env.GUILD_ID,
   ADMIN_ID: process.env.ADMIN_ID,
+  COMMANDS_SCOPE: commandsScope,
 
   GUILD_ROLE_IDS: process.env.GUILD_ROLE_IDS,
 
